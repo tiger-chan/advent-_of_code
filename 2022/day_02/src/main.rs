@@ -8,6 +8,12 @@ enum Hand {
     Scissors = 2,
 }
 
+enum GameResult {
+    Lose = 0,
+    Draw = 1,
+    Win = 2,
+}
+
 impl Add<i32> for Hand {
     type Output = Self;
     fn add(self, other: i32) -> Self::Output {
@@ -37,40 +43,47 @@ fn p1_hand(c: Option<char>) -> Hand {
         Some('A') => Hand::Rock,
         Some('B') => Hand::Paper,
         Some('C') => Hand::Scissors,
-        None => Hand::Rock,
         _ => panic!("Unexpected input"),
     }
 }
 
-fn p2_hand(c: Option<char>) -> Hand {
+fn p2_result(c: Option<char>) -> GameResult {
     match c {
-        Some('X') => Hand::Rock,
-        Some('Y') => Hand::Paper,
-        Some('Z') => Hand::Scissors,
-        None => Hand::Rock,
+        Some('X') => GameResult::Lose,
+        Some('Y') => GameResult::Draw,
+        Some('Z') => GameResult::Win,
         _ => panic!("Unexpected input"),
+    }
+}
+
+fn p2_hand(result: GameResult, hand: Hand) -> Hand {
+    match result {
+        GameResult::Draw => hand,
+        GameResult::Win => hand + 1,
+        GameResult::Lose => hand + 2, // 3 for the full rotation but we want one less
     }
 }
 
 fn main() {
     let data_str = fs::read_to_string("./data/paper_rock_scissors.txt").unwrap();
 
-	let sign_values: [i32; 3] = [1, 2, 3];
+    let sign_values: [i32; 3] = [1, 2, 3];
     let mut score: i32 = 0;
 
     for entry in data_str.split('\n') {
         let p1 = p1_hand(entry.chars().nth(0));
-        let p2 = p2_hand(entry.chars().nth(2));
+        let p2_result = p2_result(entry.chars().nth(2));
+        let p2 = p2_hand(p2_result, p1);
 
-		score += &sign_values[p2 as usize];
+        score += &sign_values[p2 as usize];
         if p1 == p2 {
-			// Tie
-			score += 3;
+            // Tie
+            score += 3;
         } else if (p1 + 1) == p2 {
-			// P2 Win
-			score += 6;
+            // P2 Win
+            score += 6;
         } else {
-			// P1 Win
+            // P1 Win
         }
     }
 
