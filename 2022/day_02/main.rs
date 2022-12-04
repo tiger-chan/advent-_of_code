@@ -87,5 +87,5 @@ fn main() {
         }
     }
 
-    print!("Score: {}\n", score);
+    println!("Score: {}", score);
 }

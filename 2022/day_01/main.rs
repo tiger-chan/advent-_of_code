@@ -19,5 +19,5 @@ fn main() {
 
     let sum: i32 = elves[1..elves.len()].iter().sum();
 
-    print!("calories: {}\n", sum);
+    println!("calories: {}", sum);
 }

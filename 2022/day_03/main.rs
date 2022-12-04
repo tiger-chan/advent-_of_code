@@ -68,5 +68,5 @@ fn main() {
         }
     }
 
-    print!("Priority: {}\n", priority);
+    println!("Priority: {}", priority);
 }
