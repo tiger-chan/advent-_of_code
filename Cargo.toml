@@ -2,7 +2,7 @@
 name = "adevent_of_code"
 version = "0.1.0"
 edition = "2021"
-default-run = "day_2022_03"
+default-run = "day_2022_04"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -19,3 +19,7 @@ path = "2022/day_02/main.rs"
 [[bin]]
 name = "day_2022_03"
 path = "2022/day_03/main.rs"
+
+[[bin]]
+name = "day_2022_04"
+path = "2022/day_04/main.rs"
