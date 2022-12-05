@@ -6,8 +6,13 @@ struct Range {
 }
 
 impl Range {
+    #[allow(dead_code)]
     fn contains(&self, range: &Range) -> bool {
         self.min <= range.min && range.max <= self.max
+    }
+
+    fn overlap(&self, range: &Range) -> bool {
+        self.max >= range.min && range.max >= self.min
     }
 }
 
@@ -58,7 +63,7 @@ fn main() {
 
         let a = Range::from(groups.next());
         let b = Range::from(groups.next());
-        if a.contains(&b) || b.contains(&a) {
+        if a.overlap(&b) {
             conained_sets += 1;
         }
     }
