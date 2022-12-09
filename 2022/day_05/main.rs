@@ -40,6 +40,7 @@ fn main() {
 		}
     }
 
+	let mut tmp_stack: String = String::new();
 	while let Some(line) = iter.next() {
 		let split = line.split(' ');
 		let split_val: Vec<&str> = split.clone().collect();
@@ -59,12 +60,17 @@ fn main() {
 			panic!("Malformed input file");
 		};
 
+		tmp_stack.clear();
 		for _ in 0..quantity {
 			let src = &mut crates[src];
 			if let Some(item) = src.pop_back() {
-				let dest = &mut crates[dest];
-				dest.push_back(item);
+				tmp_stack.push(item);
 			}
+		}
+
+		for i in tmp_stack.chars().rev() {
+			let stack = &mut crates[dest];
+			stack.push_back(i);
 		}
 	}
 
