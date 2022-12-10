@@ -1,14 +1,11 @@
 use std::fs;
 
-const MAX_FOLDER_SIZE: u32 = 100000;
+const TOTAL_FS: u32 = 70000000;
+const SPACE_NEEDED: u32 = 30000000;
 
 fn main() {
     let data_str = fs::read_to_string("./data/os.txt").unwrap();
 
-    // Creating a full array of all enties in the FS
-    // Keep track of each items size / contents
-
-    // treat all items as files?
     let mut iter = data_str.split("\n").peekable();
     let mut folders: Vec<(String, u32)> = Vec::new();
     let mut stack: Vec<(String, u32)> = Vec::new();
@@ -29,9 +26,7 @@ fn main() {
                                 new_top.1 += top.1;
                             }
 
-                            if top.1 < MAX_FOLDER_SIZE {
-                                folders.push(top);
-                            }
+                            folders.push(top);
                         }
                     }
                     dir => {
@@ -67,10 +62,32 @@ fn main() {
         }
     }
 
-    let mut total = 0;
-    for folder in &folders {
-        total += folder.1;
+    let remaining_stack = stack.len();
+    for _ in 0..remaining_stack {
+        if let Some(top) = stack.pop() {
+            if let Some(new_top) = stack.last_mut() {
+                new_top.1 += top.1;
+            }
+
+            folders.push(top);
+        }
     }
 
-    println!("[2022][07] total: {} Folders: {:?}", total, folders);
+    folders.sort_by(|a, b| a.1.cmp(&b.1));
+
+    let total = if let Some(f) = folders.last() { f.1 } else { 0 };
+
+    let remaining: u32 = TOTAL_FS - total;
+    let mut deleted = 0;
+    for folder in &folders {
+        if remaining + folder.1 > SPACE_NEEDED {
+            deleted = folder.1;
+            break;
+        }
+    }
+
+    println!(
+        "[2022][07] deleted: {} total: {} Folders: {:?}",
+        deleted, total, folders
+    );
 }
