@@ -40,5 +40,18 @@ fn main() {
 
     let signal_str = signal_points.iter().fold(0, |x, y| x + y);
 
+    for y in 0..6 {
+        for x in 0..40 {
+            let idx = x + y * 40;
+            let signal = signals[idx];
+            if ((x + 1) as i32) < signal || signal + 2 < ((x + 1) as i32) {
+                print!(".");
+            } else {
+                print!("#");
+            }
+        }
+        println!("");
+    }
+
     println!("[2022][10] signal strength: {}", signal_str);
 }
