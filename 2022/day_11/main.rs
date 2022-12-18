@@ -8,21 +8,21 @@ enum Operator {
 
 #[derive(Default, Clone, Copy)]
 struct Condition {
-    divisible: i32,
+    divisible: u64,
     when: usize,
     otherwise: usize,
 }
 
 struct Monkey {
-    pub items: Vec<i32>,
-    pub op: (Operator, i32),
+    pub items: Vec<u64>,
+    pub op: (Operator, u64),
     pub condition: Condition,
 }
 
 impl FromStr for Monkey {
     type Err = Box<dyn std::error::Error>;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut items: Vec<i32> = Vec::new();
+        let mut items: Vec<u64> = Vec::new();
         let mut op = (Operator::Plus, 0);
         let mut conditions: Condition = Condition {
             ..Default::default()
@@ -34,7 +34,7 @@ impl FromStr for Monkey {
                 line if line.starts_with("  Starting items") => {
                     items = line[18..]
                         .split(", ")
-                        .map(|x| i32::from_str_radix(x, 10).unwrap())
+                        .map(|x| u64::from_str_radix(x, 10).unwrap())
                         .collect();
                 }
                 line if line.starts_with("  Operation") => {
@@ -49,11 +49,11 @@ impl FromStr for Monkey {
                         op.0 = Operator::Pow;
                         op.1 = 2;
                     } else {
-                        op.1 = i32::from_str_radix(val, 10)?;
+                        op.1 = u64::from_str_radix(val, 10)?;
                     }
                 }
                 line if line.starts_with("  Test") => {
-                    conditions.divisible = i32::from_str_radix(&line[21..], 10)?;
+                    conditions.divisible = u64::from_str_radix(&line[21..], 10)?;
                     let cond: [Option<&str>; 2] = [iter.next(), iter.next()];
 
                     for i in cond {
@@ -78,7 +78,8 @@ impl FromStr for Monkey {
     }
 }
 
-const MONKEY_ROUNDS: usize = 20;
+//const MONKEY_ROUNDS: usize = 20;
+const MONKEY_ROUNDS: usize = 10000;
 
 fn main() {
     let data_str = fs::read_to_string("./data/day_11.txt").unwrap();
@@ -88,20 +89,22 @@ fn main() {
         .map(|x| Monkey::from_str(x).unwrap())
         .collect();
 
+    let modulo: u64 = monkeys.iter().map(|x| x.condition.divisible).product();
     let mut monkey_handles: Vec<usize> = Vec::new();
     monkey_handles.resize(monkeys.len(), 0);
 
-    for r in 0..MONKEY_ROUNDS {
+    for _r in 0..MONKEY_ROUNDS {
         for i in 0..monkeys.len() {
             monkey_handles[i] += monkeys[i].items.len();
             for k in 0..monkeys[i].items.len() {
                 let item = monkeys[i].items[k];
-                let mut result = match monkeys[i].op.0 {
+                let result = match monkeys[i].op.0 {
                     Operator::Plus => item + monkeys[i].op.1,
                     Operator::Multiply => item * monkeys[i].op.1,
                     Operator::Pow => item * item,
                 };
-                result /= 3;
+                //result /= 3;
+                let result = result % modulo;
 
                 let condition = monkeys[i].condition.clone();
                 if result % condition.divisible == 0 {
@@ -122,5 +125,11 @@ fn main() {
         // }
     }
 
-    println!("[2022][11] monkey business: {:?}", monkey_handles);
+    monkey_handles.sort_by(|a, b| b.cmp(a));
+
+    println!(
+        "[2022][11] monkey business: {:?} = {}",
+        monkey_handles,
+        monkey_handles.iter().take(2).product::<usize>()
+    );
 }
